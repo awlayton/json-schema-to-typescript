@@ -114,6 +114,20 @@ rules.set('Normalize schema.items', (schema, _rootSchema, _fileName, options) =>
   return schema
 })
 
+rules.set('Transform $defs to definitions', schema => {
+  if (schema.$defs) {
+    schema.definitions = schema.$defs
+    delete schema.$defs
+  }
+})
+
+rules.set('Transform const to singleton enum', schema => {
+  if (schema.const) {
+    schema.enum = [schema.const]
+    delete schema.const
+  }
+})
+
 export function normalize(schema: JSONSchema, filename: string, options: Options): NormalizedJSONSchema {
   const _schema = cloneDeep(schema) as NormalizedJSONSchema
   rules.forEach((rule, key) => {
