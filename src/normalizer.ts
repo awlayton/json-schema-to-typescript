@@ -4,7 +4,13 @@ import {JSONSchema, JSONSchemaTypeName, NormalizedJSONSchema} from './types/JSON
 import {escapeBlockComment, justName, log, toSafeString, traverse} from './utils'
 import {Options} from './'
 
-type Rule = (schema: JSONSchema, rootSchema: JSONSchema, fileName: string, options: Options, isRoot: boolean) => void
+export type Rule = (
+  schema: JSONSchema,
+  rootSchema: JSONSchema,
+  fileName: string,
+  options: Options,
+  isRoot: boolean
+) => void
 const rules = new Map<string, Rule>()
 
 function hasType(schema: JSONSchema, type: JSONSchemaTypeName) {
@@ -130,9 +136,11 @@ rules.set('Transform const to singleton enum', schema => {
 
 export function normalize(schema: JSONSchema, filename: string, options: Options): NormalizedJSONSchema {
   const _schema = cloneDeep(schema) as NormalizedJSONSchema
-  rules.forEach((rule, key) => {
+  const apply = (rule: Rule, key: string) => {
     traverse(_schema, (schema, isRoot) => rule(schema, _schema, filename, options, isRoot), true)
     log(whiteBright.bgYellow('normalizer'), `Applied rule: "${key}"`)
-  })
+  }
+  rules.forEach(apply)
+  options.normalizerRules?.forEach(apply)
   return _schema
 }

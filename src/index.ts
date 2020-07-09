@@ -6,7 +6,7 @@ import {dirname} from 'path'
 import {Options as PrettierOptions} from 'prettier'
 import {format} from './formatter'
 import {generate} from './generator'
-import {normalize} from './normalizer'
+import {Rule, normalize} from './normalizer'
 import {optimize} from './optimizer'
 import {parse} from './parser'
 import {dereference} from './resolver'
@@ -58,6 +58,10 @@ export interface Options {
    * [$RefParser](https://github.com/BigstickCarpet/json-schema-ref-parser) Options, used when resolving `$ref`s
    */
   $refOptions: $RefOptions
+  /**
+   * Normalizer rules to apply to processed schemas (in addition to defaults)
+   */
+  normalizerRules?: Map<string, Rule>
 }
 
 export const DEFAULT_OPTIONS: Options = {
